@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Injectable, NotFoundException } from '@nestjs/common';
 
 export type Task = {
@@ -41,14 +40,14 @@ export class TasksService {
 
   /**
    * Crear tarea
-   * @param task 
+   * @param task
    * @returns tarea creada
    */
   createTask(task: Task): Task {
     const taskData = {
       id: this.tasks.length + 1,
-      ...task
-    }
+      ...task,
+    };
     this.tasks.push(taskData);
 
     return taskData;
@@ -56,12 +55,12 @@ export class TasksService {
 
   /**
    * Actualizar tarea
-   * @param id 
-   * @param updateTaskDto 
+   * @param id
+   * @param updateTaskDto
    * @returns tarea actualizada
    */
   updateTask(id: number, updateTaskDto: Partial<Task>): Task {
-    const task = this.tasks.find(task => task.id === id);
+    const task = this.tasks.find((task) => task.id === id);
     if (!task) {
       throw new NotFoundException(`La tarea con el id: ${id} no existe!`);
     }
@@ -71,14 +70,13 @@ export class TasksService {
 
   /**
    * Eliminar tarea
-   * @param id 
+   * @param id
    */
   deleteTask(id: number): void {
-    const taskIndex = this.tasks.findIndex(task => task.id === id);
+    const taskIndex = this.tasks.findIndex((task) => task.id === id);
     if (taskIndex === -1) {
       throw new NotFoundException(`La tarea con el id: ${id} no existe!!!`);
     }
     this.tasks.splice(taskIndex, 1);
   }
-  
 }
