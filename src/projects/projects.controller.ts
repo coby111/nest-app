@@ -20,7 +20,7 @@ export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
 
   /**
-   * Crea un nuevo proyecto.
+   * Crea un nuevo proyecto
    * @param createProjectDto Datos del proyecto a crear
    * @returns Retorna el proyecto creado
    */
