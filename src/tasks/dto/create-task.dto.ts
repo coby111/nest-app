@@ -1,6 +1,5 @@
 export class createTaskDto {
-  id: number;
-  description: string;
-  date: Date;
-  completed?: boolean;
+  name: string;
+  description?: string;
+  projectId: number;
 }

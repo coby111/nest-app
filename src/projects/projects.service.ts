@@ -5,7 +5,7 @@ import { Prisma, Project } from '@prisma/client';
 
 @Injectable()
 export class ProjectsService {
-  //Instamcia de prisma
+  //Instancia de prisma
   constructor(private prisma: PrismaService) {}
 
   /**
@@ -23,17 +23,39 @@ export class ProjectsService {
    * *Metodo para consultar todos los proyectos
    * @returns Retorna los todos los proyectos registrados
    */
-  async findAll() {
+  async findAll(): Promise<Project[]> {
     return await this.prisma.project.findMany();
   }
 
+  async byId(id: number): Promise<Project> {
+    const project = await this.prisma.project.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!project) {
+      throw new NotFoundException('Proyecto no encontrado');
+    }
+    return project;
+  }
+
   /**
-   * *Mertodo para consultar un proyecto a partir del id
+   * *Metodo para consultar un proyecto a partir del id
    * @param id id del proyecto a consultar
    * @returns Retorna el proyecto con el id correspondiente
    */
-  async findOne(id: number) {
-    const project = await this.prisma.project.findUnique({ where: { id } });
+  async findOne(id: number): Promise<Project> {
+    await this.byId(id);
+
+    const project = await this.prisma.project.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        tasks: true,
+      },
+    });
 
     if (!project) {
       throw new NotFoundException(`Project with id ${id} not found`);
@@ -48,18 +70,14 @@ export class ProjectsService {
    * @param updateProjectDto Datos del proyecto a actualizar
    * @returns Retorna el proyecto actualizado
    */
-  async update(id: number, updateProjectDto: UpdateProjectDto) {
-    const existingProject = await this.prisma.project.findUnique({
-      where: { id },
-    });
-
-    if (!existingProject) {
-      throw new NotFoundException(`Project with ${id} not found`);
-    }
-
+  async update(
+    id: number,
+    updateProjectDto: UpdateProjectDto,
+  ): Promise<Project> {
+    await this.findOne(id);
     return await this.prisma.project.update({
+      data: { ...updateProjectDto } as any,
       where: { id },
-      data: updateProjectDto,
     });
   }
 
@@ -68,7 +86,8 @@ export class ProjectsService {
    * @param id id del proyecto a eliminar
    * @returns Retorna un mensaje despues de eliminar un proyecto
    */
-  remove(id: number) {
-    return `This action removes a #${id} project`;
+  async remove(id: number): Promise<Project> {
+    await this.findOne(id);
+    return this.prisma.project.delete({ where: { id } });
   }
 }

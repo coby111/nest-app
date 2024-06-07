@@ -1,56 +1,56 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-
-export type Task = {
-  id: number;
-  description: string;
-  date: Date;
-  completed?: boolean;
-};
+import { Prisma, Task } from '@prisma/client';
+import { PrismaService } from 'src/prisma.service';
+import { UpdateTaskDto } from './dto/update-task.dto';
 
 @Injectable()
 export class TasksService {
-  private tasks: Task[] = [
-    {
-      id: 1,
-      description: 'Task 1',
-      date: new Date(),
-      completed: false,
-    },
-    {
-      id: 2,
-      description: 'Task 2',
-      date: new Date(),
-      completed: false,
-    },
-    {
-      id: 3,
-      description: 'Task 3',
-      date: new Date(),
-      completed: false,
-    },
-  ];
+  constructor(private prisma: PrismaService) {}
+
+  /**
+   * *Metodo para registrar una nueva tarea
+   * @param data Datos de la tarea a registrar
+   * @returns Retorna la tarea registrada
+   */
+  async createTask(data: Prisma.TaskCreateInput): Promise<Task> {
+    return this.prisma.task.create({
+      data,
+    });
+  }
 
   /**
    * Funcion para retornar la lista de tareas
    * @returns
    */
-  getTasks(): Task[] {
-    return this.tasks;
+  async findAllTasks(): Promise<Task[]> {
+    return this.prisma.task.findMany();
   }
 
-  /**
-   * Crear tarea
-   * @param task
-   * @returns tarea creada
-   */
-  createTask(task: Task): Task {
-    const taskData = {
-      id: this.tasks.length + 1,
-      ...task,
-    };
-    this.tasks.push(taskData);
+  async byId(id: number): Promise<Task> {
+    const task = await this.prisma.task.findUnique({
+      where: {
+        id,
+      },
+    });
 
-    return taskData;
+    if (!task) {
+      throw new NotFoundException(`Tarea con id ${id}, no encontrada`);
+    }
+    return task;
+  }
+
+  async findOneTask(id: number): Promise<Task> {
+    await this.byId(id);
+
+    const task = await this.prisma.task.findUnique({
+      where: { id },
+    });
+
+    if (!task) {
+      throw new NotFoundException(`Project with id ${id} not found`);
+    }
+
+    return task;
   }
 
   /**
@@ -59,24 +59,18 @@ export class TasksService {
    * @param updateTaskDto
    * @returns tarea actualizada
    */
-  updateTask(id: number, updateTaskDto: Partial<Task>): Task {
-    const task = this.tasks.find((task) => task.id === id);
-    if (!task) {
-      throw new NotFoundException(`La tarea con el id: ${id} no existe!`);
-    }
-    Object.assign(task, updateTaskDto);
-    return task;
+  async updateTask(id: number, updateTaskDto: UpdateTaskDto): Promise<Task> {
+    return await this.prisma.task.update({
+      data: { ...updateTaskDto } as any,
+      where: { id },
+    });
   }
 
   /**
    * Eliminar tarea
    * @param id
    */
-  deleteTask(id: number): void {
-    const taskIndex = this.tasks.findIndex((task) => task.id === id);
-    if (taskIndex === -1) {
-      throw new NotFoundException(`La tarea con el id: ${id} no existe!!!`);
-    }
-    this.tasks.splice(taskIndex, 1);
+  async deleteTask(id: number): Promise<Task> {
+    return await this.prisma.task.delete({ where: { id } });
   }
 }
