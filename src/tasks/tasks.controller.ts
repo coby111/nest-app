@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
-import { Body,
+import {
+  Body,
   Controller,
   Delete,
   Get,
@@ -19,7 +20,7 @@ import { Task } from '@prisma/client';
  */
 @Controller('tasks')
 export class TasksController {
-  constructor(private readonly tasksService: TasksService) { }
+  constructor(private readonly tasksService: TasksService) {}
 
   /**
    * Crea una nueva tarea
@@ -40,11 +41,11 @@ export class TasksController {
     return this.tasksService.findAllTasks();
   }
 
-/**
- * Obtiene un proyecto mediante su id
- * @param id id del proyecto a obtener
- * @returns Retorna el proyecto encotrado
- */
+  /**
+   * Obtiene un proyecto mediante su id
+   * @param id id del proyecto a obtener
+   * @returns Retorna el proyecto encotrado
+   */
   @Get(':id')
   findOneTask(@Param('id', ParseIntPipe) id: number) {
     return this.tasksService.findOneTask(id);
@@ -59,11 +60,11 @@ export class TasksController {
   @Patch(':id')
   updateTask(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updateTaskDto: UpdateTaskDto) {
+    @Body() updateTaskDto: UpdateTaskDto,
+  ) {
     return this.tasksService.updateTask(id, updateTaskDto);
   }
 
-    
   @Delete(':id')
   deleteTask(@Param('id', ParseIntPipe) id: number): { message: string } {
     this.tasksService.deleteTask(id);
