@@ -69,7 +69,7 @@ export class ProjectsController {
    * @returns Retorna el id del proyecto eliminado
    */
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.projectsService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.projectsService.remove(id);
   }
 }

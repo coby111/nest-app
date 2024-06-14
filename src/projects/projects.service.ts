@@ -21,7 +21,7 @@ export class ProjectsService {
 
   /**
    * *Metodo para consultar todos los proyectos
-   * @returns Retorna los todos los proyectos registrados
+   * @returns Retorna todos los proyectos registrados
    */
   async findAll(): Promise<Project[]> {
     return await this.prisma.project.findMany();
