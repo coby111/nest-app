@@ -1,18 +1,18 @@
 /* eslint-disable prettier/prettier */
 import {
-  Body,
-  Controller,
-  Delete,
   Get,
-  Param,
-  ParseIntPipe,
-  Patch,
+  Body,
   Post,
+  Param,
+  Patch,
+  Delete,
+  Controller,
+  ParseIntPipe,
 } from '@nestjs/common';
+import { Task } from '@prisma/client';
 import { TasksService } from './tasks.service';
 import { createTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
-import { Task } from '@prisma/client';
 
 /**
  * Ruta del raiz del proyecto
